@@ -12,12 +12,14 @@
         @on-complete="handleOnComplete"
       ></todo-item>
     </ul>
+    <a-button @click="turn">跳转</a-button>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import TodoItem from '../components/todo-item';
+import {State, Mutation} from 'vuex-class';
 
 @Component({
   name: 'TodoPage',
@@ -27,19 +29,12 @@ import TodoItem from '../components/todo-item';
 })
 export default class TodoPage extends Vue {
   public editingIndex = -1;
-  public list = [
-    {
-      text: 'javascript 高级程序设计',
-      complete: false,
-    },
-    {
-      text: 'javascript 设计模式',
-      complete: false,
-    },
-  ];
+  @State('todoList') public list;
+  @Mutation('updateTodoList') public updateList;
+  @Mutation('completeTodoItem') public handleOnComplete;
 
   public handleOnSave({index, content}) {
-    this.list[index].text = content;
+    this.updateList({index, content});
     this.handleOnCancel();
   }
 
@@ -51,8 +46,10 @@ export default class TodoPage extends Vue {
     this.editingIndex = index;
   }
 
-  public handleOnComplete(index) {
-    this.list[index].complete = true;
+  public turn() {
+    this.$router.push({
+      name: 'show'
+    })
   }
 }
 </script>

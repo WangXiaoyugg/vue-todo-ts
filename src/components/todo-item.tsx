@@ -1,6 +1,12 @@
 import {Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 import './index.less';
 
+
+interface Item {
+    text: string;
+    complete: boolean;
+}
+
 // @ts-ignore
 @Component({
     name: 'TodoItem',
@@ -22,7 +28,8 @@ export default class TodoItem extends Vue {
     }
 
     @Emit('on-save')
-    public save(index, content) {
+    public save(index, content, event) {
+        event.stopPropagation();
         return {
             index,
             content,
@@ -30,12 +37,15 @@ export default class TodoItem extends Vue {
     }
 
     @Emit('on-edit')
-    public edit() {
-     return this.index;
+    public edit(event) {
+        event.stopPropagation();
+        return this.index;
     }
 
     @Emit('on-cancel')
-    public cancel() {}
+    public cancel(event) {
+        event.stopPropagation();
+    }
 
     @Emit('on-complete')
     public complete() {
@@ -44,7 +54,7 @@ export default class TodoItem extends Vue {
 
     protected render() {
         return (
-            <li class='item-wrap' on-click={this.complete}>
+            <li class='item-wrap' >
                 {
                     this.editingIndex === this.index
                     ? (
@@ -58,7 +68,7 @@ export default class TodoItem extends Vue {
                         </div>
                     ) : (
                         <div>
-                           <span style={this.item.complete ? {textDecoration: 'line-through'} : {}}>
+                           <span on-click={this.complete} style={this.item.complete ? {textDecoration: 'line-through'} : {}}>
                                {this.item.text}
                            </span>
                            <a-icon type='edit' nativeOn-click={this.edit}/>
@@ -70,9 +80,5 @@ export default class TodoItem extends Vue {
     }
 }
 
-interface Item {
-    text: string;
-    complete: boolean;
-}
 
 
